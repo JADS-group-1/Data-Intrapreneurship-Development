@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Form</title>
+    <style>
+        body {
+            background-color: #BCCAD3;
+        }
+
+        .container {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .upload-container {
+            margin-top: -150px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .upload-container input[type="file"] {
+            display: block;
+            margin: 10px 0;
+        }
+
+        .upload-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .upload-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; top: 20px">
+        <img src="/logo" height="100px" alt="Logo">
+    </div>
+    <div class="container">
+        <div class="upload-container">
+            <h1>Upload an image to analyse</h1>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" id="fileInput" accept="image/*">
+                <button type="button" id="uploadButton">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadButton = document.getElementById('uploadButton');
+
+        // Handle form submission
+        uploadButton.addEventListener('click', () => {
+            const formData = new FormData();
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            formData.append('image', file);
+
+            fetch('http://localhost:5000/api/predict', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                sessionStorage.setItem("prediction_response", JSON.stringify(data))
+                window.location.href = "/results"
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while uploading the file.');
+            });
+        });
+    </script>
+</body>
+</html>

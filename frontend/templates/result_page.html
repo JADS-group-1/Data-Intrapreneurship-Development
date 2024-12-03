@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas with Bounding Boxes</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #BCCAD3;
+            /*height: 100vh;*/
+            /*text-align: center;*/
+        }
+
+        header {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header img {
+            width: 50px;
+            height: auto;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+        }
+
+        .counts-box {
+            position: absolute;
+            left:102%;
+            width: 100px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .counts-box h3 {
+            margin: 0 0 10px;
+        }
+
+        .counts-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .counts-box li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; margin-top: 20px">
+        <img src="/logo" height="100px" alt="Logo">
+    </div>
+    <h1>Image with Bounding Boxes</h1>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+        <div class="counts-box" id="counts-box">
+            <h3>Box Counts</h3>
+            <ul id="counts-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        const results = sessionStorage.getItem("prediction_response");
+        if (!results) alert("No results in storage, err");
+
+        const apiResponse = JSON.parse(results);
+        const { image_path: imagePath, boxes, counts } = apiResponse;
+
+        const host = "http://localhost:5000"; // Host to retrieve the image
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const image = new Image();
+
+        // Display box counts
+        const countsList = document.getElementById('counts-list');
+        Object.entries(counts).forEach(([className, count]) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${className}: ${count}`;
+            countsList.appendChild(listItem);
+        });
+
+        // Load the image
+        image.src = `${host}${imagePath}`;
+        image.onload = () => {
+            // Calculate aspect ratio and scale down if needed
+            const maxDimension = 1000;
+            let scale = 1;
+
+            if (image.width > maxDimension || image.height > maxDimension) {
+                scale = Math.min(maxDimension / image.width, maxDimension / image.height);
+            }
+
+            // Set canvas dimensions based on scaled image dimensions
+            canvas.width = image.width * scale;
+            canvas.height = image.height * scale;
+
+            // Draw the scaled image onto the canvas
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            // Draw bounding boxes
+            boxes.forEach(box => {
+                const [x, y, width, height] = box.xywh;
+
+                // Convert normalized coordinates to pixel values
+                const boxX = x * canvas.width - (width * canvas.width / 2);
+                const boxY = y * canvas.height - (height * canvas.height / 2);
+                const boxWidth = width * canvas.width;
+                const boxHeight = height * canvas.height;
+
+                // Draw the bounding box
+                ctx.strokeStyle = box.class === 'window' ? 'red' : box.class === 'door' ? 'yellow' : 'black';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+                // Draw the label
+                ctx.fillStyle = box.class === 'window' ? 'rgba(255, 0, 0, 0.8)' : box.class === 'door' ? 'rgba(255, 255, 0, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+                ctx.font = '14px Arial';
+                const text = box.class;
+                const textWidth = ctx.measureText(text).width;
+                ctx.fillRect(boxX, boxY - 18, textWidth + 6, 18); // Background for text
+                ctx.fillStyle = 'white';
+                ctx.fillText(text, boxX + 3, boxY - 5); // Draw text
+            });
+        };
+    </script>
+</body>
+</html>
