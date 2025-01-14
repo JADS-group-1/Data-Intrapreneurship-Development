@@ -10,7 +10,8 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "uploads")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", os.path.join(BASE_DIR, "uploads"))
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 predictor = Predictor()

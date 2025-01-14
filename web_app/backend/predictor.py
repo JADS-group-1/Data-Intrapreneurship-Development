@@ -1,7 +1,8 @@
 import os
 from ultralytics import YOLO
 
-MODEL_PATH = os.getenv("MODEL_PATH", "model/turkey_trained_v8_platinum.pt")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.getenv("MODEL_PATH", os.path.join(BASE_DIR, "model/finaL_yolov8_freeze_10_14_epochs.pt"))
 MIN_CONFIDENCE = os.getenv("MIN_CONFIDENCE", 0.25)
 
 class Predictor:
