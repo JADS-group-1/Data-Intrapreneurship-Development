@@ -95,7 +95,7 @@
 
             formData.append('image', file);
 
-            fetch('http://localhost:5000/api/predict', {
+            fetch('http://localhost:5002/api/predict', {
                 method: 'POST',
                 body: formData,
             })

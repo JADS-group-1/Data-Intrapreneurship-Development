@@ -96,7 +96,7 @@
         const apiResponse = JSON.parse(results);
         const { image_path: imagePath, boxes, counts } = apiResponse;
 
-        const host = "http://localhost:5000"; // Host to retrieve the image
+        const host = "http://localhost:5002"; // Host to retrieve the image
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const image = new Image();

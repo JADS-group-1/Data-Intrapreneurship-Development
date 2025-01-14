@@ -1,0 +1,3 @@
+# Dataset
+
+The dataset used in this research consists of around 700 images from the paper of Sezen et al (2022) and 100 images from Kleurrijk Wonen (KW), alongside their corresponding labels. Since the images from KW are of high quality, downloading the images would from the Google Drive, which was the development environment, would result into 2 zip folders, of around 3 GB of memory. Because of this, the images and the labels are available in the following link from our Google Drive. [(Dataset link)](https://drive.google.com/drive/folders/1kI5Lj4yj3l1KOXVy1sL4OksNFmJTaXP5?usp=sharing). 

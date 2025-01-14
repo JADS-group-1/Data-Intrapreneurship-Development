@@ -4,7 +4,7 @@ import os
 from numpy import ndarray
 from ultralytics.engine.results import Results
 
-from backend.predictor import Predictor
+from web_app.backend.predictor import Predictor
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -63,4 +63,4 @@ def get_image(file_name):
     return send_file(file_path, mimetype="image/" + file_name.split(".")[-1])
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5002, debug=True)
